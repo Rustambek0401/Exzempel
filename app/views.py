@@ -6,17 +6,22 @@ from app.models import Customers
 from app.forms import CustomersForm, AddressForm
 from django.db.models import Q
 
-def index(request):
+def index(request,cat_id=None):
     customers = Customers.objects.all()
     peginator = Paginator(customers,10) # bunda ekranga nechta user chiqishini ko'rsatadi per_page: 5 bunda ekranga 5 ta malumot chiqadi
     page_number = request.GET.get("page")
     page_obj = peginator.get_page(page_number)
-
     search_query = request.GET.get('search','')
     if search_query:
         page_obj = Customers.objects.filter(Q(first_name__search=search_query) | Q(email__search=search_query))
+    filter_type = request.GET.get('filter','')
+    if cat_id:
+        customers = Customers.objects.filter(category=cat_id)
+        if filter_type == 'expensive':
+            customers = customers.order_by('-joined')
+
     context = {
-        # 'customers': customers
+        'customers': customers,
         'page_obj': page_obj
     }
     return render(request, 'app/index.html', context)
