@@ -26,8 +26,8 @@ def index(request,cat_id=None):
     }
     return render(request, 'app/index.html', context)
 
-def detail(requsest, pk):
-    customers = Customers.objects.get(id=pk)
+def detail(requsest, slug):
+    customers = Customers.objects.get(slug=slug)
     context = {
         'customers': customers
 
